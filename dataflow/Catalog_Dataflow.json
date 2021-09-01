@@ -1,0 +1,83 @@
+{
+	"name": "Catalog_Dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "moviecatalogue_southridge",
+						"type": "DatasetReference"
+					},
+					"name": "SouthridgeMoviesCatalog"
+				},
+				{
+					"dataset": {
+						"referenceName": "VanArsdalActors",
+						"type": "DatasetReference"
+					},
+					"name": "VanArsdalActors"
+				},
+				{
+					"dataset": {
+						"referenceName": "VanArsdalMovies",
+						"type": "DatasetReference"
+					},
+					"name": "VanArsdalMovies"
+				},
+				{
+					"dataset": {
+						"referenceName": "VanArsdalMovieActors",
+						"type": "DatasetReference"
+					},
+					"name": "VanArsdalMovieActors"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CatalogSink",
+						"type": "DatasetReference"
+					},
+					"name": "Catalog"
+				}
+			],
+			"transformations": [
+				{
+					"name": "VanArsdalJoinActors"
+				},
+				{
+					"name": "VanArsdalJoinMovies"
+				},
+				{
+					"name": "VanArsdalMoviesDeriveColumns"
+				},
+				{
+					"name": "VanArsdalMoviesSelect"
+				},
+				{
+					"name": "VanArsdalSelectMovieActors"
+				},
+				{
+					"name": "VanArsdalActorsSelect"
+				},
+				{
+					"name": "SouthridgeMoviesFlatten"
+				},
+				{
+					"name": "SouthbrideMoviesSelect"
+				},
+				{
+					"name": "SouthbridgeDeriveCols"
+				},
+				{
+					"name": "UnionCatalog"
+				},
+				{
+					"name": "CatalogUUID"
+				}
+			],
+			"script": "source(output(\n\t\tactors as (name as string)[],\n\t\tavailabilityDate as string,\n\t\tgenre as string,\n\t\trating as string,\n\t\treleaseYear as string,\n\t\truntime as string,\n\t\tstreamingAvailabilityDate as string,\n\t\ttier as string,\n\t\ttitle as string,\n\t\tid as string,\n\t\t{_rid} as string,\n\t\t{_self} as string,\n\t\t{_etag} as string,\n\t\t{_attachments} as string,\n\t\t{_ts} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> SouthridgeMoviesCatalog\nsource(output(\n\t\tActorID as string,\n\t\tActorName as string,\n\t\tGender as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> VanArsdalActors\nsource(output(\n\t\tMovieID as string,\n\t\tMovieTitle as string,\n\t\tCategory as string,\n\t\tRating as string,\n\t\tRunTimeMin as integer,\n\t\tReleaseDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> VanArsdalMovies\nsource(output(\n\t\tMovieActorID as string,\n\t\tMovieID as string,\n\t\tActorID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> VanArsdalMovieActors\nVanArsdalMovieActors, VanArsdalActorsSelect join(VanArsdalMovieActors@ActorID == VanArsdalActorsSelect@ActorID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> VanArsdalJoinActors\nVanArsdalJoinActors, VanArsdalMoviesDeriveColumns join(VanArsdalMovieActors@MovieID == VanArsdalMoviesSelect@MovieID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> VanArsdalJoinMovies\nVanArsdalMoviesSelect derive(AvailabilityDate = toDate(ReleaseDate, 'MM-dd-yyyy'),\n\t\tAvailabilityYear = year(toDate(ReleaseDate, 'MM-dd-yyyy')),\n\t\tSourceID = 2) ~> VanArsdalMoviesDeriveColumns\nVanArsdalMovies select(mapColumn(\n\t\tMovieID,\n\t\tMovieTitle,\n\t\tRating,\n\t\tReleaseDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> VanArsdalMoviesSelect\nVanArsdalJoinMovies select(mapColumn(\n\t\tActorID = VanArsdalActorsSelect@ActorID,\n\t\tActor = ActorName,\n\t\tMovieID = VanArsdalMoviesSelect@MovieID,\n\t\tMovieTitle,\n\t\tRating,\n\t\tAvailabilityDate,\n\t\tAvailabilityYear,\n\t\tSourceID,\n\t\tGender\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> VanArsdalSelectMovieActors\nVanArsdalActors select(mapColumn(\n\t\tActorID,\n\t\tActorName,\n\t\tGender\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> VanArsdalActorsSelect\nSouthridgeMoviesCatalog foldDown(unroll(actors),\n\tmapColumn(\n\t\tactor = actors,\n\t\tavailabilityDate,\n\t\tgenre,\n\t\trating,\n\t\treleaseYear,\n\t\truntime,\n\t\tstreamingAvailabilityDate,\n\t\ttier,\n\t\ttitle,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> SouthridgeMoviesFlatten\nSouthridgeMoviesFlatten select(mapColumn(\n\t\tActor = actor.name,\n\t\tGenre = genre,\n\t\tRating = rating,\n\t\tAvailabilityYear = releaseYear,\n\t\tAvailabilityDate = streamingAvailabilityDate,\n\t\tMovieTier = tier,\n\t\tMovieTitle = title,\n\t\tMovieID = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SouthbrideMoviesSelect\nSouthbrideMoviesSelect derive(SourceID = 1,\n\t\tAvailabilityDate = toDate(AvailabilityDate),\n\t\tAvailabilityYear = year(toDate(AvailabilityDate))) ~> SouthbridgeDeriveCols\nSouthbridgeDeriveCols, VanArsdalSelectMovieActors union(byName: true)~> UnionCatalog\nUnionCatalog derive(CatalogID = uuid()) ~> CatalogUUID\nCatalogUUID sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\ttruncate: true,\n\tumask: 0022,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Catalog"
+		}
+	}
+}

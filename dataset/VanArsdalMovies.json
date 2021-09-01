@@ -1,0 +1,45 @@
+{
+	"name": "VanArsdalMovies",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "team2-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "dboMovies.parquet",
+				"fileSystem": "vanarsdel"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "MovieID",
+				"type": "UTF8"
+			},
+			{
+				"name": "MovieTitle",
+				"type": "UTF8"
+			},
+			{
+				"name": "Category",
+				"type": "UTF8"
+			},
+			{
+				"name": "Rating",
+				"type": "UTF8"
+			},
+			{
+				"name": "RunTimeMin",
+				"type": "INT32"
+			},
+			{
+				"name": "ReleaseDate",
+				"type": "UTF8"
+			}
+		]
+	}
+}

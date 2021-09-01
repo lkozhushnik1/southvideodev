@@ -1,0 +1,25 @@
+{
+	"name": "OnChangeCuratedCatalog",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "LoadActors",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/curated/blobs/catalog/",
+			"blobPathEndsWith": "_SUCCESS",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/5c5b89dd-3c51-45d6-b4a4-991809a37167/resourceGroups/Team2-rg/providers/Microsoft.Storage/storageAccounts/team2adls",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

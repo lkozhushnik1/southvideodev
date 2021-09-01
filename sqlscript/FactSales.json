@@ -1,0 +1,17 @@
+{
+	"name": "FactSales",
+	"properties": {
+		"content": {
+			"query": "DROP TABLE FactSales;\n\nCREATE TABLE FactSales2 (\n    SalesSK int NOT NULL,\n    OrderID\tUNIQUEIDENTIFIER NOT NULL,\n    LineNumber int NOT NULL,\n    OrderDateSK int NOT NULL,\n    ShipDateSK int NULL,\n    CustomerSK int NOT NULL,\n    LocationSK int NOT NULL,\n    MovieSK int NOT NULL,\n    Quantity int NOT NULL,\n    UnitCost MONEY NOT NULL,\n    ExtendedCost MONEY NOT NULL\n    );",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Team2SQLPool",
+				"databaseName": "Team2SQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

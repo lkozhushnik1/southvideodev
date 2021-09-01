@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 5",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [SourceID]\n,[UniqueOrderID]\n,[OrderID]\n,[OrderDetailID]\n,[UniqueMovieID]\n,[MovieID]\n,[Quantity]\n,[UnitCost]\n,[LineNumber]\n,[CustomerID]\n,[UniqueCustomerID]\n,[OrderDate]\n,[ShipDate]\n,[TotalCost]\n FROM [dbo].[SalesOrderDetails]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Team2SQLPool",
+				"databaseName": "Team2SQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

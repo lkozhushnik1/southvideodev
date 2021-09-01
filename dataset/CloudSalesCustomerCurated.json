@@ -1,0 +1,20 @@
+{
+	"name": "CloudSalesCustomerCurated",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "team2-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "cloudsales",
+				"fileSystem": "curated"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

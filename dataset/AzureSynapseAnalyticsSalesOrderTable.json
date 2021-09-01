@@ -1,0 +1,80 @@
+{
+	"name": "AzureSynapseAnalyticsSalesOrderTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "SourceID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "UniqueOrderID",
+				"type": "varchar"
+			},
+			{
+				"name": "OrderID",
+				"type": "varchar"
+			},
+			{
+				"name": "OrderDetailID",
+				"type": "varchar"
+			},
+			{
+				"name": "UniqueMovieID",
+				"type": "varchar"
+			},
+			{
+				"name": "MovieID",
+				"type": "varchar"
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "UnitCost",
+				"type": "decimal",
+				"precision": 19,
+				"scale": 4
+			},
+			{
+				"name": "LineNumber",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CustomerID",
+				"type": "varchar"
+			},
+			{
+				"name": "UniqueCustomerID",
+				"type": "varchar"
+			},
+			{
+				"name": "OrderDate",
+				"type": "date"
+			},
+			{
+				"name": "ShipDate",
+				"type": "date"
+			},
+			{
+				"name": "TotalCost",
+				"type": "decimal",
+				"precision": 19,
+				"scale": 4
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SalesOrderDetails"
+		}
+	}
+}

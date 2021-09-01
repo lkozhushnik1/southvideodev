@@ -1,0 +1,35 @@
+{
+	"name": "LoadActors",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CuratedCatalogSource",
+						"type": "DatasetReference"
+					},
+					"name": "CuratedCatalog"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dboActors",
+						"type": "DatasetReference"
+					},
+					"name": "Actors"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectActors"
+				},
+				{
+					"name": "RemoveNulls"
+				}
+			],
+			"script": "source(output(\n\t\tActor as string,\n\t\tGenre as string,\n\t\tRating as string,\n\t\tAvailabilityYear as integer,\n\t\tAvailabilityDate as date,\n\t\tMovieTier as string,\n\t\tMovieTitle as string,\n\t\tMovieID as string,\n\t\tSourceID as integer,\n\t\tActorID as string,\n\t\tGender as string,\n\t\tCatalogID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> CuratedCatalog\nCuratedCatalog select(mapColumn(\n\t\tActor,\n\t\tActorID,\n\t\tGender\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectActors\nSelectActors filter((isNull(Actor) || isNull(ActorID) || isNull(Gender)) == false()\r\n) ~> RemoveNulls\nRemoveNulls sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tActorSK as integer,\n\t\tActorID as string,\n\t\tActorName as string,\n\t\tActorGender as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tActorID,\n\t\tActorName = Actor,\n\t\tActorGender = Gender\n\t)) ~> Actors"
+		}
+	}
+}

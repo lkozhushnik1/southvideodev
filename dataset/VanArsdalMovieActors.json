@@ -1,0 +1,33 @@
+{
+	"name": "VanArsdalMovieActors",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "team2-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "dboMovieActors.parquet",
+				"fileSystem": "vanarsdel"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "MovieActorID",
+				"type": "UTF8"
+			},
+			{
+				"name": "MovieID",
+				"type": "UTF8"
+			},
+			{
+				"name": "ActorID",
+				"type": "UTF8"
+			}
+		]
+	}
+}

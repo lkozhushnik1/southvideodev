@@ -1,0 +1,51 @@
+{
+	"name": "df-cloudsalescurated",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "VanArsdelCustomerRaw",
+						"type": "DatasetReference"
+					},
+					"name": "VanArsdelCustomerRaw"
+				},
+				{
+					"dataset": {
+						"referenceName": "Parquet2",
+						"type": "DatasetReference"
+					},
+					"name": "CloudSales"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CustomerCurated",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerCurated"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "DerivedColumn2"
+				},
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Union1"
+				},
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tAddressLine1 as string,\n\t\tAddressLine2 as string,\n\t\tCity as string,\n\t\tState as string,\n\t\tZipCode as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> VanArsdelCustomerRaw\nsource(output(\n\t\tAddressID as string,\n\t\tCustomerID as string,\n\t\tAddressLine1 as string,\n\t\tAddressLine2 as string,\n\t\tCity as string,\n\t\tState as string,\n\t\tZipCode as string,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> CloudSales\nVanArsdelCustomerRaw derive(SourceID = 2) ~> DerivedColumn1\nCloudSales derive(SourceID = 1,\n\t\tUniqueID = concat(\"1\", \"-\",CustomerID, \"-\",AddressID)) ~> DerivedColumn2\nDerivedColumn2, DerivedColumn1 join(CloudSales@CustomerID == VanArsdelCustomerRaw@CustomerID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nDerivedColumn1, DerivedColumn2 union(byName: true)~> Union1\nUnion1 select(mapColumn(\n\t\tSourceID,\n\t\tUniqueID,\n\t\tAddressID,\n\t\tCustomerID,\n\t\tFirstName,\n\t\tLastName,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tCity,\n\t\tState,\n\t\tZipCode,\n\t\tp = PhoneNumber,\n\t\tCreatedDate,\n\t\tUpdatedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tSourceID as integer,\n\t\tUniqueOrderID as string,\n\t\tOrderID as string,\n\t\tOrderDetailID as string,\n\t\tUniqueMovieID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as decimal(19,4),\n\t\tLineNumber as integer,\n\t\tCustomerID as string,\n\t\tUniqueCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as decimal(19,4)\n\t),\n\tformat: 'parquet',\n\tpartitionFileNames:['Curated_customer.parquet'],\n\ttruncate: true,\n\tumask: 0022,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> CustomerCurated"
+		}
+	}
+}

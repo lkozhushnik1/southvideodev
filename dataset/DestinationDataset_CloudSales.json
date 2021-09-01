@@ -1,0 +1,25 @@
+{
+	"name": "DestinationDataset_CloudSales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "team2-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_fileName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "dboCustomers.parquet",
+				"fileSystem": "cloudsales"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

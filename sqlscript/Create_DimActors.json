@@ -1,0 +1,17 @@
+{
+	"name": "Create_DimActors",
+	"properties": {
+		"content": {
+			"query": "\nDROP Table DimActors\n\nCREATE TABLE DimActors (\n    ActorSK\tint IDENTITY(1,1) not null,\n    ActorID\tUNIQUEIDENTIFIER not null,\n    ActorName nvarchar(81) not null,\n    ActorGender\tnchar(1) not null\n) WITH\n(   \n    DISTRIBUTION = HASH(ActorID), CLUSTERED COLUMNSTORE INDEX\n)\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Team2SQLPool",
+				"databaseName": "Team2SQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

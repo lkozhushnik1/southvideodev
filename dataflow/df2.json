@@ -1,0 +1,54 @@
+{
+	"name": "df2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsSalesOrderTable",
+						"type": "DatasetReference"
+					},
+					"name": "sourceSalesOrder"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sourceDimCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsFactSales",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "SurrogateKey1"
+				},
+				{
+					"name": "Select2"
+				},
+				{
+					"name": "Select3"
+				},
+				{
+					"name": "Join1"
+				}
+			],
+			"script": "source(output(\n\t\tSourceID as integer,\n\t\tUniqueOrderID as string,\n\t\tOrderID as string,\n\t\tOrderDetailID as string,\n\t\tUniqueMovieID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as decimal(19,4),\n\t\tLineNumber as integer,\n\t\tCustomerID as string,\n\t\tUniqueCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as decimal(19,4)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSalesOrder\nsource(output(\n\t\tCustomerSK as integer,\n\t\tCustomerID as string,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tAddressLine1 as string,\n\t\tAddressLine2 as string,\n\t\tCity as string,\n\t\tState as string,\n\t\tZipCode as string,\n\t\tPhoneNumber as string,\n\t\tRecordStartDate as date,\n\t\tRecordEndDate as date,\n\t\tActiveFlag as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceDimCustomers\nsourceSalesOrder select(mapColumn(\n\t\tSourceID,\n\t\tUniqueOrderID,\n\t\tOrderID,\n\t\tOrderDetailID,\n\t\tUniqueMovieID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber,\n\t\tCustomerID,\n\t\tUniqueCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 derive(SalesSK = 1,\n\t\tOrderDateSK = toInteger(toString(OrderDate, 'yyyMMdd')),\n\t\tShipDateSK = toInteger(toString(ShipDate, 'yyyMMdd')),\n\t\tMovieSK = 1,\n\t\tExtendedCost = UnitCost*Quantity,\n\t\tCustomerSK = 1) ~> DerivedColumn1\nDerivedColumn1 keyGenerate(output(SalesSK as long),\n\tstartAt: 1L) ~> SurrogateKey1\nJoin1 select(mapColumn(\n\t\tSalesSK,\n\t\tOrderID,\n\t\tLineNumber,\n\t\tOrderDateSK,\n\t\tShipDateSK,\n\t\tCustomerSK = Select3@CustomerSK,\n\t\tMovieSK,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tExtendedCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nsourceDimCustomers select(mapColumn(\n\t\tCustomerSK,\n\t\tCustomerID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select3\nSurrogateKey1, Select3 join(Select1@CustomerID == Select3@CustomerID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nSelect2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tSalesSK as integer,\n\t\tOrderID as string,\n\t\tLineNumber as integer,\n\t\tOrderDateSK as integer,\n\t\tShipDateSK as integer,\n\t\tCustomerSK as integer,\n\t\tMovieSK as integer,\n\t\tDaysToShip as integer,\n\t\tQuantity as integer,\n\t\tUnitCost as decimal(19,4),\n\t\tExtendedCost as decimal(19,4)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tSalesSK,\n\t\tOrderID,\n\t\tLineNumber,\n\t\tOrderDateSK,\n\t\tShipDateSK,\n\t\tCustomerSK,\n\t\tMovieSK,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tExtendedCost\n\t)) ~> sink1"
+		}
+	}
+}

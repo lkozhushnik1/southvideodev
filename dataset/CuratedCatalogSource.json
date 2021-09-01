@@ -1,0 +1,69 @@
+{
+	"name": "CuratedCatalogSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "team2-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "catalog",
+				"fileSystem": "curated"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Actor",
+				"type": "UTF8"
+			},
+			{
+				"name": "Genre",
+				"type": "UTF8"
+			},
+			{
+				"name": "Rating",
+				"type": "UTF8"
+			},
+			{
+				"name": "AvailabilityYear",
+				"type": "INT32"
+			},
+			{
+				"name": "AvailabilityDate",
+				"type": "DATE"
+			},
+			{
+				"name": "MovieTier",
+				"type": "UTF8"
+			},
+			{
+				"name": "MovieTitle",
+				"type": "UTF8"
+			},
+			{
+				"name": "MovieID",
+				"type": "UTF8"
+			},
+			{
+				"name": "SourceID",
+				"type": "INT32"
+			},
+			{
+				"name": "ActorID",
+				"type": "UTF8"
+			},
+			{
+				"name": "Gender",
+				"type": "UTF8"
+			},
+			{
+				"name": "CatalogID",
+				"type": "UTF8"
+			}
+		]
+	}
+}
