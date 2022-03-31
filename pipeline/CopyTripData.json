@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dfTransformTripData",
+				"name": "df1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
