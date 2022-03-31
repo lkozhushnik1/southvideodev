@@ -1,0 +1,62 @@
+{
+	"name": "dfTrasformTripData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "File1",
+						"type": "DatasetReference"
+					},
+					"name": "SourceTaxiData"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          medallion as string,",
+				"          { hack_license} as string,",
+				"          { vendor_id} as string,",
+				"          { rate_code} as string,",
+				"          { store_and_fwd_flag} as string,",
+				"          { pickup_datetime} as string,",
+				"          { dropoff_datetime} as string,",
+				"          { passenger_count} as string,",
+				"          { trip_time_in_secs} as string,",
+				"          { trip_distance} as string,",
+				"          { pickup_longitude} as string,",
+				"          { pickup_latitude} as string,",
+				"          { dropoff_longitude} as string,",
+				"          { dropoff_latitude} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceTaxiData",
+				"SourceTaxiData select(mapColumn(",
+				"          medallion,",
+				"          { hack_license},",
+				"          { vendor_id},",
+				"          { rate_code},",
+				"          { store_and_fwd_flag},",
+				"          { pickup_datetime},",
+				"          { dropoff_datetime},",
+				"          { passenger_count},",
+				"          { trip_time_in_secs},",
+				"          { trip_distance},",
+				"          { pickup_longitude},",
+				"          { pickup_latitude},",
+				"          { dropoff_longitude},",
+				"          { dropoff_latitude}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
+			]
+		}
+	}
+}
