@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "FactTaxi",
+						"referenceName": "FactTaxiCSV",
 						"type": "DatasetReference"
 					},
 					"name": "FactTaxi"
@@ -66,12 +66,12 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectColumns",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> FactTaxi"
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'parquet') ~> FactTaxi"
 			]
 		}
 	}

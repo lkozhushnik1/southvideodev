@@ -1,0 +1,22 @@
+{
+	"name": "FactTaxiCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "demohc7on2ywpzovapocws5-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "enriched/FactTaxi",
+				"fileSystem": "demohc7on2ywpzovapoc1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
