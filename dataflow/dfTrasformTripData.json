@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "File1",
+						"referenceName": "TripData",
 						"type": "DatasetReference"
 					},
 					"name": "SourceTaxiData"

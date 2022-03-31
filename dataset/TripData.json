@@ -1,5 +1,5 @@
 {
-	"name": "File1",
+	"name": "TripData",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "demohc7on2ywpzovapocws5-WorkspaceDefaultStorage",
