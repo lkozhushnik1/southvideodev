@@ -10,11 +10,13 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "FactTaxi.csv",
 				"folderPath": "enriched/FactTaxi",
 				"fileSystem": "demohc7on2ywpzovapoc1"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": []
