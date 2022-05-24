@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [patient_id]\n,[first_name]\n,[last_name]\n,[email]\n,[gender]\n,[latest_prescription]\n,[prescription_manufacturer]\n,[admission_date]\n,[admission_diagnosis]\n,[recommended_procedure]\n FROM [dbo].[Patient_Admissions]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "demohc7on2ywpzovapocws1p5",
+				"poolName": "demohc7on2ywpzovapocws1p5"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
